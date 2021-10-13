@@ -1,5 +1,5 @@
 import GraphQLServer from "./server";
-
-const graphQLServer = new GraphQLServer();
+import schema from "./schema";
+const graphQLServer = new GraphQLServer(schema);
 
 graphQLServer.listen((port: number) => console.log("Server listen", port));

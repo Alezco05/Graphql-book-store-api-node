@@ -4,13 +4,21 @@ import express, { Application } from "express";
 import { GraphQLSchema } from "graphql";
 import { makeExecutableSchema } from "graphql-tools";
 import { createServer, Server } from "http";
+import schema from "./schema";
 
 class GraphQLServer {
   //Propiedades
   private app!: Application;
   private httpServer!: Server;
   private readonly DEFAULT_PORT: number = 3000;
-  constructor() {
+  private schema!: GraphQLSchema;
+  constructor(schema: GraphQLSchema) {
+    if (schema === undefined) {
+      throw new Error(
+        "Se necesita un schema de GraphQL para trabajar con APIS de GraphQL"
+      );
+    }
+    this.schema = schema;
     this.init();
   }
   private init() {
@@ -24,36 +32,8 @@ class GraphQLServer {
     this.httpServer = createServer(this.app);
   }
   private async configApolloServerExpress() {
-    // Definir los tipos de definicion
-    const typeDefs = gql`
-      type Query {
-        hello: String!
-        helloWithName(name: String): String!
-        peopleNumber: Int!
-      }
-    `;
-    const resolvers = {
-      Query: {
-        hello: () => "Hola a la API de Graphl",
-        helloWithName: (
-          _: void,
-          args: { name: string },
-          context: any,
-          info: object
-        ) => {
-          console.log(info);
-          return `Hola ${args.name}`;
-        },
-        peopleNumber: () => 103,
-      },
-    };
-    // Construir el schema ejecutable
-    const schema: GraphQLSchema = makeExecutableSchema({
-      typeDefs,
-      resolvers,
-    });
     const apolloServer = new ApolloServer({
-      schema,
+      schema: this.schema,
       introspection: true,
     });
     await apolloServer.start();
