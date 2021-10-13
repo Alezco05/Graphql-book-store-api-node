@@ -1,4 +1,6 @@
 import { IResolvers } from "@graphql-tools/utils";
+import data from "../data";
+import { IBook } from "../interfaces/Book";
 const queryResolvers: IResolvers = {
   Query: {
     hello: () => "Hola a la API de Graphl",
@@ -12,6 +14,7 @@ const queryResolvers: IResolvers = {
       return `Hola ${args.name}`;
     },
     peopleNumber: () => 103,
+    bookList: (): Array<IBook> => data.books,
   },
 };
 
